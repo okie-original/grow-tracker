@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Okie Original — Grow Tracker</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&family=Nunito:wght@400;600;700&display=swap');
+
+  :root{
+    --bg:#141414;
+    --panel:#1e1e1e;
+    --accent:#FF7000;
+    --accent-dark:#c95700;
+    --text:#f2f2f2;
+    --text-dim:#a9a9a9;
+    --border:#2e2e2e;
+  }
+
+  *{box-sizing:border-box;}
+
+  body{
+    margin:0;
+    min-height:100vh;
+    background:var(--bg);
+    color:var(--text);
+    font-family:'Nunito', sans-serif;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding:20px;
+  }
+
+  /* ---------- GATE ---------- */
+  #gate{
+    max-width:520px;
+    width:100%;
+    background:var(--panel);
+    border:1px solid var(--border);
+    border-radius:16px;
+    padding:28px 26px 24px;
+    box-shadow:0 10px 40px rgba(0,0,0,0.5);
+  }
+
+  #gate h1{
+    font-family:'Fredoka', sans-serif;
+    color:var(--accent);
+    font-size:1.4rem;
+    margin:0 0 4px;
+    letter-spacing:0.5px;
+  }
+
+  #gate .sub{
+    color:var(--text-dim);
+    font-size:0.85rem;
+    margin-bottom:18px;
+  }
+
+  #gate ol{
+    padding-left:20px;
+    margin:0 0 18px;
+  }
+
+  #gate li{
+    margin-bottom:12px;
+    line-height:1.45;
+    font-size:0.95rem;
+  }
+
+  #gate .final-line{
+    font-size:0.9rem;
+    color:var(--text-dim);
+    margin-bottom:20px;
+    border-top:1px solid var(--border);
+    padding-top:14px;
+  }
+
+  .checkbox-row{
+    display:flex;
+    align-items:flex-start;
+    gap:10px;
+    margin-bottom:20px;
+    background:#181818;
+    border:1px solid var(--border);
+    border-radius:10px;
+    padding:12px 14px;
+  }
+
+  .checkbox-row input[type="checkbox"]{
+    width:22px;
+    height:22px;
+    flex-shrink:0;
+    accent-color:var(--accent);
+    margin-top:2px;
+  }
+
+  .checkbox-row label{
+    font-size:0.9rem;
+    line-height:1.4;
+  }
+
+  #enterBtn{
+    width:100%;
+    padding:16px;
+    font-family:'Fredoka', sans-serif;
+    font-size:1.05rem;
+    font-weight:600;
+    letter-spacing:0.5px;
+    color:#111;
+    background:var(--accent);
+    border:none;
+    border-radius:12px;
+    cursor:pointer;
+    transition:background 0.15s ease, transform 0.05s ease;
+  }
+
+  #enterBtn:disabled{
+    background:#4a4a4a;
+    color:#8a8a8a;
+    cursor:not-allowed;
+  }
+
+  #enterBtn:not(:disabled):active{
+    transform:scale(0.98);
+    background:var(--accent-dark);
+  }
+
+  /* ---------- APP (placeholder) ---------- */
+  #app{
+    display:none;
+    max-width:520px;
+    width:100%;
+    text-align:center;
+  }
+
+  #app h2{
+    font-family:'Fredoka', sans-serif;
+    color:var(--accent);
+  }
+
+  #app p{
+    color:var(--text-dim);
+  }
+
+  #exitBtn{
+    margin-top:20px;
+    background:none;
+    border:1px solid var(--border);
+    color:var(--text-dim);
+    padding:10px 16px;
+    border-radius:8px;
+    cursor:pointer;
+    font-family:'Nunito', sans-serif;
+  }
+</style>
+</head>
+<body>
+
+  <div id="gate">
+    <h1>PRIVATE PROPERTY — NOTICE &amp; AGREEMENT</h1>
+    <div class="sub">Okie Original Grow Tracker</div>
+
+    <ol>
+      <li><strong>No unauthorized access.</strong> This application and all data within it are private property, intended solely for use by its owner and those directly authorized by the owner. This system is not open to the public.</li>
+      <li><strong>Law enforcement &amp; government officials.</strong> Any request to access, inspect, copy, or seize data from this application by a law enforcement officer or government official must be accompanied by a valid warrant or other legally binding court order. Absent that, access is not authorized or consented to.</li>
+      <li><strong>Hosting/server personnel.</strong> Employees, contractors, or agents of any hosting provider or server operator are not authorized to view, copy, modify, or disclose the contents of this application beyond what is strictly necessary for routine technical maintenance.</li>
+      <li><strong>No implied consent.</strong> Nothing about the public availability of this page constitutes consent to search, seizure, or inspection of its contents.</li>
+    </ol>
+
+    <div class="final-line">If you do not agree to these terms, exit now. Continuing past this notice constitutes your binding agreement.</div>
+
+    <div class="checkbox-row">
+      <input type="checkbox" id="agreeCheck">
+      <label for="agreeCheck">I have read this notice and I agree to its terms.</label>
+    </div>
+
+    <button id="enterBtn" disabled>Enter</button>
+  </div>
+
+  <div id="app">
+    <h2>Welcome back</h2>
+    <p>This is where your grow tracker content goes. Replace this block with your app's real markup.</p>
+    <button id="exitBtn">Log out / Re-lock</button>
+  </div>
+
+<script>
+  const STORAGE_KEY = 'okie_grow_tos_accepted';
+
+  const gate = document.getElementById('gate');
+  const app = document.getElementById('app');
+  const checkbox = document.getElementById('agreeCheck');
+  const enterBtn = document.getElementById('enterBtn');
+  const exitBtn = document.getElementById('exitBtn');
+
+  function showApp(){
+    gate.style.display = 'none';
+    app.style.display = 'block';
+  }
+
+  function showGate(){
+    app.style.display = 'none';
+    gate.style.display = 'block';
+    checkbox.checked = false;
+    enterBtn.disabled = true;
+  }
+
+  // Check if already accepted on this device
+  if (localStorage.getItem(STORAGE_KEY) === 'true') {
+    showApp();
+  }
+
+  checkbox.addEventListener('change', () => {
+    enterBtn.disabled = !checkbox.checked;
+  });
+
+  enterBtn.addEventListener('click', () => {
+    if (!checkbox.checked) return;
+    localStorage.setItem(STORAGE_KEY, 'true');
+    showApp();
+  });
+
+  // Optional: lets you re-lock the app / force the gate again
+  exitBtn.addEventListener('click', () => {
+    localStorage.removeItem(STORAGE_KEY);
+    showGate();
+  });
+</script>
+
+</body>
+</html>
