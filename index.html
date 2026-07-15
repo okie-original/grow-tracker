@@ -705,6 +705,7 @@
   const addModal = document.getElementById('addModal');
   const pullModal = document.getElementById('pullModal');
   let pullTargetId = null;
+  let editSeedId = null;
 
   async function loadSeeds(){
     seedList.innerHTML = '<div class="status-msg">Loading your seed stock...</div>';
@@ -740,6 +741,13 @@
         <div class="seed-meta">${seed.seed_type || 'unspecified'} · warns below ${seed.low_stock_threshold}</div>
         <div class="seed-actions">
           <button class="pull-btn" data-id="${seed.id}">Pull Seeds</button>
+          <button class="edit-btn"
+            data-id="${seed.id}"
+            data-strain-id="${seed.strains ? seed.strains.id : ''}"
+            data-name="${strainName}"
+            data-count="${seed.count}"
+            data-type="${seed.seed_type || 'fem'}"
+            data-threshold="${seed.low_stock_threshold}">Edit</button>
         </div>
       `;
       seedList.appendChild(card);
@@ -752,13 +760,28 @@
         pullModal.classList.add('open');
       });
     });
+
+    document.querySelectorAll('.edit-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        editSeedId = { seedId: btn.dataset.id, strainId: btn.dataset.strainId };
+        document.getElementById('strainName').value = btn.dataset.name;
+        document.getElementById('seedCount').value = btn.dataset.count;
+        document.getElementById('seedType').value = btn.dataset.type;
+        document.getElementById('lowThreshold').value = btn.dataset.threshold;
+        document.querySelector('#addModal h3').textContent = 'Edit Strain / Seed Batch';
+        addModal.classList.add('open');
+      });
+    });
   }
 
   // ---- Add Strain/Seed Modal ----
   document.getElementById('addBtn').addEventListener('click', () => {
+    editSeedId = null;
     document.getElementById('strainName').value = '';
     document.getElementById('seedCount').value = 0;
+    document.getElementById('seedType').value = 'fem';
     document.getElementById('lowThreshold').value = 5;
+    document.querySelector('#addModal h3').textContent = 'Add Strain / Seed Batch';
     addModal.classList.add('open');
   });
 
@@ -774,6 +797,38 @@
 
     if (!name){
       alert('Give the strain a name first.');
+      return;
+    }
+
+    if (editSeedId){
+      // Editing an existing seed batch — update the strain name and the seed row
+      const { error: strainError } = await sb
+        .from('strains')
+        .update({ name })
+        .eq('id', editSeedId.strainId);
+
+      if (strainError){
+        alert('Error updating strain: ' + strainError.message);
+        return;
+      }
+
+      const { error: seedError } = await sb
+        .from('seeds')
+        .update({
+          count: count,
+          seed_type: type,
+          low_stock_threshold: threshold
+        })
+        .eq('id', editSeedId.seedId);
+
+      if (seedError){
+        alert('Error updating seed batch: ' + seedError.message);
+        return;
+      }
+
+      editSeedId = null;
+      addModal.classList.remove('open');
+      loadSeeds();
       return;
     }
 
