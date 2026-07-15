@@ -259,6 +259,33 @@
     color:var(--text-dim);
   }
 
+  .cross-card{
+    background:var(--panel);
+    border:1px solid var(--border);
+    border-radius:12px;
+    padding:16px 18px;
+    margin-bottom:14px;
+  }
+
+  .cross-title{
+    font-family:'Fredoka', sans-serif;
+    font-size:1.05rem;
+    font-weight:600;
+    color:var(--accent);
+    margin-bottom:4px;
+  }
+
+  .cross-meta{
+    color:var(--text-dim);
+    font-size:0.82rem;
+    margin-bottom:8px;
+  }
+
+  .cross-notes{
+    font-size:0.9rem;
+    line-height:1.4;
+  }
+
   #exitBtn{
     background:none;
     border:1px solid var(--border);
@@ -474,6 +501,7 @@
     <div class="tab-nav">
       <button class="tab-btn active" data-tab="seedTab">Seed Vault</button>
       <button class="tab-btn" data-tab="plantsTab">Plants / Tents</button>
+      <button class="tab-btn" data-tab="breedingTab">Breeding</button>
     </div>
 
     <!-- SEED VAULT TAB -->
@@ -490,6 +518,14 @@
       <button id="addPlantBtn" class="action-btn">+ Add Plant</button>
       <div id="tentList" style="margin-top:16px;">
         <div class="status-msg">Loading your tents...</div>
+      </div>
+    </div>
+
+    <!-- BREEDING TAB -->
+    <div class="tab-pane" id="breedingTab">
+      <button id="addCrossBtn" class="action-btn">+ Add Cross</button>
+      <div id="crossList" style="margin-top:16px;">
+        <div class="status-msg">Loading your crosses...</div>
       </div>
     </div>
   </div>
@@ -583,6 +619,37 @@
       <div class="modal-actions">
         <button class="cancel-btn" id="cancelPlant">Cancel</button>
         <button class="save-btn" id="savePlant">Save</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Add Cross Modal -->
+  <div class="modal-overlay" id="addCrossModal">
+    <div class="modal-box">
+      <h3>Add Cross</h3>
+      <div class="field">
+        <label for="crossMomSelect">Mom plant</label>
+        <select id="crossMomSelect"></select>
+      </div>
+      <div class="field">
+        <label for="crossDadSelect">Dad plant</label>
+        <select id="crossDadSelect"></select>
+      </div>
+      <div class="field">
+        <label for="crossResultName">Name for the resulting strain/cross</label>
+        <input type="text" id="crossResultName" placeholder="e.g. leave blank if unnamed">
+      </div>
+      <div class="field">
+        <label for="crossDate">Cross date</label>
+        <input type="date" id="crossDate">
+      </div>
+      <div class="field">
+        <label for="crossNotes">Phenotype / notes</label>
+        <input type="text" id="crossNotes" placeholder="Effect, smell, structure, etc.">
+      </div>
+      <div class="modal-actions">
+        <button class="cancel-btn" id="cancelCross">Cancel</button>
+        <button class="save-btn" id="saveCross">Save</button>
       </div>
     </div>
   </div>
@@ -791,6 +858,9 @@
       if (btn.dataset.tab === 'plantsTab'){
         loadTents();
       }
+      if (btn.dataset.tab === 'breedingTab'){
+        loadCrosses();
+      }
     });
   });
 
@@ -951,6 +1021,120 @@
 
     addPlantModal.classList.remove('open');
     loadTents();
+  });
+
+  // ---------- BREEDING LOGIC ----------
+  const crossList = document.getElementById('crossList');
+  const addCrossModal = document.getElementById('addCrossModal');
+
+  async function loadCrosses(){
+    crossList.innerHTML = '<div class="status-msg">Loading your crosses...</div>';
+
+    const { data, error } = await sb
+      .from('crosses')
+      .select(`
+        id, cross_date, phenotype_notes,
+        mom:mom_plant_id ( id, strains(name) ),
+        dad:dad_plant_id ( id, strains(name) ),
+        strains:resulting_strain_id ( name )
+      `)
+      .order('created_at', { ascending: false });
+
+    if (error){
+      crossList.innerHTML = `<div class="status-msg">Couldn't load crosses: ${error.message}</div>`;
+      return;
+    }
+
+    if (!data || data.length === 0){
+      crossList.innerHTML = '<div class="status-msg">No crosses logged yet. Add one above.</div>';
+      return;
+    }
+
+    crossList.innerHTML = '';
+    data.forEach(cross => {
+      const momName = cross.mom && cross.mom.strains ? cross.mom.strains.name : 'Unknown mom';
+      const dadName = cross.dad && cross.dad.strains ? cross.dad.strains.name : 'Unknown dad';
+      const resultName = cross.strains ? cross.strains.name : null;
+
+      const card = document.createElement('div');
+      card.className = 'cross-card';
+      card.innerHTML = `
+        <div class="cross-title">${momName} x ${dadName}${resultName ? ' → ' + resultName : ''}</div>
+        <div class="cross-meta">${cross.cross_date ? 'Crossed ' + cross.cross_date : ''}</div>
+        ${cross.phenotype_notes ? `<div class="cross-notes">${cross.phenotype_notes}</div>` : ''}
+      `;
+      crossList.appendChild(card);
+    });
+  }
+
+  async function populatePlantDropdowns(){
+    const { data: plants } = await sb
+      .from('plants')
+      .select('id, strains(name)')
+      .order('created_at', { ascending: false });
+
+    const options = (plants || [])
+      .map(p => `<option value="${p.id}">${p.strains ? p.strains.name : 'Unknown'} (${p.id.slice(0,8)})</option>`)
+      .join('') || '<option value="">No plants yet — add one in Plants/Tents first</option>';
+
+    document.getElementById('crossMomSelect').innerHTML = options;
+    document.getElementById('crossDadSelect').innerHTML = options;
+  }
+
+  document.getElementById('addCrossBtn').addEventListener('click', async () => {
+    await populatePlantDropdowns();
+    document.getElementById('crossResultName').value = '';
+    document.getElementById('crossDate').value = new Date().toISOString().split('T')[0];
+    document.getElementById('crossNotes').value = '';
+    addCrossModal.classList.add('open');
+  });
+
+  document.getElementById('cancelCross').addEventListener('click', () => {
+    addCrossModal.classList.remove('open');
+  });
+
+  document.getElementById('saveCross').addEventListener('click', async () => {
+    const momId = document.getElementById('crossMomSelect').value;
+    const dadId = document.getElementById('crossDadSelect').value;
+    const resultName = document.getElementById('crossResultName').value.trim();
+    const crossDate = document.getElementById('crossDate').value;
+    const notes = document.getElementById('crossNotes').value.trim();
+
+    if (!momId || !dadId){
+      alert('You need at least two plants set up first (a mom and a dad).');
+      return;
+    }
+
+    let resultingStrainId = null;
+    if (resultName){
+      const { data: strainData, error: strainError } = await sb
+        .from('strains')
+        .insert({ name: resultName })
+        .select()
+        .single();
+
+      if (strainError){
+        alert('Error saving resulting strain: ' + strainError.message);
+        return;
+      }
+      resultingStrainId = strainData.id;
+    }
+
+    const { error: crossError } = await sb.from('crosses').insert({
+      mom_plant_id: momId,
+      dad_plant_id: dadId,
+      resulting_strain_id: resultingStrainId,
+      cross_date: crossDate || null,
+      phenotype_notes: notes || null
+    });
+
+    if (crossError){
+      alert('Error saving cross: ' + crossError.message);
+      return;
+    }
+
+    addCrossModal.classList.remove('open');
+    loadCrosses();
   });
 </script>
 
