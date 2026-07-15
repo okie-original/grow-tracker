@@ -4,17 +4,22 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Okie Original — Grow Tracker</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&family=Nunito:wght@400;600;700&display=swap');
 
   :root{
     --bg:#141414;
     --panel:#1e1e1e;
+    --panel-2:#181818;
     --accent:#FF7000;
     --accent-dark:#c95700;
     --text:#f2f2f2;
     --text-dim:#a9a9a9;
     --border:#2e2e2e;
+    --green:#4caf50;
+    --yellow:#e8b32c;
+    --red:#e05252;
   }
 
   *{box-sizing:border-box;}
@@ -26,7 +31,7 @@
     color:var(--text);
     font-family:'Nunito', sans-serif;
     display:flex;
-    align-items:center;
+    align-items:flex-start;
     justify-content:center;
     padding:20px;
   }
@@ -35,6 +40,7 @@
   #gate{
     max-width:520px;
     width:100%;
+    margin-top:40px;
     background:var(--panel);
     border:1px solid var(--border);
     border-radius:16px;
@@ -80,7 +86,7 @@
     align-items:flex-start;
     gap:10px;
     margin-bottom:20px;
-    background:#181818;
+    background:var(--panel-2);
     border:1px solid var(--border);
     border-radius:10px;
     padding:12px 14px;
@@ -125,32 +131,208 @@
     background:var(--accent-dark);
   }
 
-  /* ---------- APP (placeholder) ---------- */
+  /* ---------- APP ---------- */
   #app{
     display:none;
-    max-width:520px;
+    max-width:640px;
     width:100%;
-    text-align:center;
+    margin:0 auto;
   }
 
-  #app h2{
+  .app-header{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    margin-bottom:18px;
+  }
+
+  .app-header h2{
     font-family:'Fredoka', sans-serif;
     color:var(--accent);
-  }
-
-  #app p{
-    color:var(--text-dim);
+    margin:0;
+    font-size:1.4rem;
   }
 
   #exitBtn{
-    margin-top:20px;
     background:none;
     border:1px solid var(--border);
     color:var(--text-dim);
-    padding:10px 16px;
+    padding:8px 14px;
     border-radius:8px;
     cursor:pointer;
     font-family:'Nunito', sans-serif;
+    font-size:0.85rem;
+  }
+
+  #addBtn{
+    width:100%;
+    padding:16px;
+    margin-bottom:20px;
+    font-family:'Fredoka', sans-serif;
+    font-size:1rem;
+    font-weight:600;
+    color:#111;
+    background:var(--accent);
+    border:none;
+    border-radius:12px;
+    cursor:pointer;
+  }
+
+  #addBtn:active{
+    background:var(--accent-dark);
+  }
+
+  .status-msg{
+    text-align:center;
+    color:var(--text-dim);
+    padding:30px 0;
+  }
+
+  .seed-card{
+    background:var(--panel);
+    border:1px solid var(--border);
+    border-left:6px solid var(--green);
+    border-radius:12px;
+    padding:16px 18px;
+    margin-bottom:14px;
+  }
+
+  .seed-card.low{
+    border-left-color:var(--yellow);
+  }
+
+  .seed-card.out{
+    border-left-color:var(--red);
+  }
+
+  .seed-card-top{
+    display:flex;
+    justify-content:space-between;
+    align-items:flex-start;
+    margin-bottom:6px;
+  }
+
+  .seed-name{
+    font-family:'Fredoka', sans-serif;
+    font-size:1.1rem;
+    font-weight:600;
+  }
+
+  .seed-count{
+    font-family:'Fredoka', sans-serif;
+    font-size:1.3rem;
+    font-weight:700;
+  }
+
+  .seed-card.low .seed-count{ color:var(--yellow); }
+  .seed-card.out .seed-count{ color:var(--red); }
+  .seed-card:not(.low):not(.out) .seed-count{ color:var(--green); }
+
+  .seed-meta{
+    color:var(--text-dim);
+    font-size:0.85rem;
+    margin-bottom:12px;
+  }
+
+  .seed-actions{
+    display:flex;
+    gap:10px;
+  }
+
+  .seed-actions button{
+    flex:1;
+    padding:12px;
+    border-radius:8px;
+    border:1px solid var(--border);
+    background:var(--panel-2);
+    color:var(--text);
+    font-family:'Nunito', sans-serif;
+    font-weight:600;
+    cursor:pointer;
+  }
+
+  .seed-actions button:active{
+    background:#252525;
+  }
+
+  /* ---------- MODAL (add / pull) ---------- */
+  .modal-overlay{
+    display:none;
+    position:fixed;
+    inset:0;
+    background:rgba(0,0,0,0.6);
+    align-items:center;
+    justify-content:center;
+    padding:20px;
+    z-index:10;
+  }
+
+  .modal-overlay.open{
+    display:flex;
+  }
+
+  .modal-box{
+    background:var(--panel);
+    border:1px solid var(--border);
+    border-radius:16px;
+    padding:22px;
+    max-width:420px;
+    width:100%;
+  }
+
+  .modal-box h3{
+    font-family:'Fredoka', sans-serif;
+    color:var(--accent);
+    margin:0 0 16px;
+  }
+
+  .field{
+    margin-bottom:14px;
+  }
+
+  .field label{
+    display:block;
+    font-size:0.85rem;
+    color:var(--text-dim);
+    margin-bottom:6px;
+  }
+
+  .field input, .field select{
+    width:100%;
+    padding:12px;
+    border-radius:8px;
+    border:1px solid var(--border);
+    background:var(--panel-2);
+    color:var(--text);
+    font-family:'Nunito', sans-serif;
+    font-size:1rem;
+  }
+
+  .modal-actions{
+    display:flex;
+    gap:10px;
+    margin-top:18px;
+  }
+
+  .modal-actions button{
+    flex:1;
+    padding:14px;
+    border-radius:10px;
+    border:none;
+    font-family:'Fredoka', sans-serif;
+    font-weight:600;
+    cursor:pointer;
+  }
+
+  .modal-actions .save-btn{
+    background:var(--accent);
+    color:#111;
+  }
+
+  .modal-actions .cancel-btn{
+    background:var(--panel-2);
+    color:var(--text-dim);
+    border:1px solid var(--border);
   }
 </style>
 </head>
@@ -178,14 +360,72 @@
   </div>
 
   <div id="app">
-    <h2>Welcome back</h2>
-    <p>This is where your grow tracker content goes. Replace this block with your app's real markup.</p>
-    <button id="exitBtn">Log out / Re-lock</button>
+    <div class="app-header">
+      <h2>Seed Vault</h2>
+      <button id="exitBtn">Log out / Re-lock</button>
+    </div>
+
+    <button id="addBtn">+ Add Strain / Seed Batch</button>
+
+    <div id="seedList">
+      <div class="status-msg">Loading your seed stock...</div>
+    </div>
+  </div>
+
+  <!-- Add / Edit Modal -->
+  <div class="modal-overlay" id="addModal">
+    <div class="modal-box">
+      <h3>Add Strain / Seed Batch</h3>
+      <div class="field">
+        <label for="strainName">Strain name</label>
+        <input type="text" id="strainName" placeholder="e.g. H.S.B. x I.C.C.">
+      </div>
+      <div class="field">
+        <label for="seedCount">Seed count</label>
+        <input type="number" id="seedCount" min="0" value="0">
+      </div>
+      <div class="field">
+        <label for="seedType">Type</label>
+        <select id="seedType">
+          <option value="fem">Feminized</option>
+          <option value="regular">Regular</option>
+          <option value="auto">Autoflower</option>
+        </select>
+      </div>
+      <div class="field">
+        <label for="lowThreshold">Low-stock warning below</label>
+        <input type="number" id="lowThreshold" min="0" value="5">
+      </div>
+      <div class="modal-actions">
+        <button class="cancel-btn" id="cancelAdd">Cancel</button>
+        <button class="save-btn" id="saveAdd">Save</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Pull Seeds Modal -->
+  <div class="modal-overlay" id="pullModal">
+    <div class="modal-box">
+      <h3>Pull Seeds</h3>
+      <div class="field">
+        <label for="pullQty">How many are you planting?</label>
+        <input type="number" id="pullQty" min="1" value="1">
+      </div>
+      <div class="modal-actions">
+        <button class="cancel-btn" id="cancelPull">Cancel</button>
+        <button class="save-btn" id="confirmPull">Pull</button>
+      </div>
+    </div>
   </div>
 
 <script>
-  const STORAGE_KEY = 'okie_grow_tos_accepted';
+  // ---------- SUPABASE CONFIG ----------
+  const SUPABASE_URL = 'https://tgleccxrpcskwtvlvxik.supabase.co';
+  const SUPABASE_KEY = 'sb_publishable_-rFuGpJFY-ToQ94dKqOgBw_Q3NMS3J7';
+  const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
+  // ---------- GATE LOGIC ----------
+  const STORAGE_KEY = 'okie_grow_tos_accepted';
   const gate = document.getElementById('gate');
   const app = document.getElementById('app');
   const checkbox = document.getElementById('agreeCheck');
@@ -195,6 +435,7 @@
   function showApp(){
     gate.style.display = 'none';
     app.style.display = 'block';
+    loadSeeds();
   }
 
   function showGate(){
@@ -204,7 +445,6 @@
     enterBtn.disabled = true;
   }
 
-  // Check if already accepted on this device
   if (localStorage.getItem(STORAGE_KEY) === 'true') {
     showApp();
   }
@@ -219,10 +459,156 @@
     showApp();
   });
 
-  // Optional: lets you re-lock the app / force the gate again
   exitBtn.addEventListener('click', () => {
     localStorage.removeItem(STORAGE_KEY);
     showGate();
+  });
+
+  // ---------- SEED VAULT LOGIC ----------
+  const seedList = document.getElementById('seedList');
+  const addModal = document.getElementById('addModal');
+  const pullModal = document.getElementById('pullModal');
+  let pullTargetId = null;
+
+  async function loadSeeds(){
+    seedList.innerHTML = '<div class="status-msg">Loading your seed stock...</div>';
+
+    // Pull seeds joined with their strain name
+    const { data, error } = await sb
+      .from('seeds')
+      .select('id, count, seed_type, low_stock_threshold, strains(id, name)')
+      .order('created_at', { ascending: false });
+
+    if (error){
+      seedList.innerHTML = `<div class="status-msg">Couldn't load seed stock: ${error.message}</div>`;
+      return;
+    }
+
+    if (!data || data.length === 0){
+      seedList.innerHTML = '<div class="status-msg">No seed batches yet. Add your first one above.</div>';
+      return;
+    }
+
+    seedList.innerHTML = '';
+    data.forEach(seed => {
+      const statusClass = seed.count <= 0 ? 'out' : (seed.count <= seed.low_stock_threshold ? 'low' : '');
+      const strainName = seed.strains ? seed.strains.name : 'Unknown strain';
+
+      const card = document.createElement('div');
+      card.className = `seed-card ${statusClass}`;
+      card.innerHTML = `
+        <div class="seed-card-top">
+          <div class="seed-name">${strainName}</div>
+          <div class="seed-count">${seed.count}</div>
+        </div>
+        <div class="seed-meta">${seed.seed_type || 'unspecified'} · warns below ${seed.low_stock_threshold}</div>
+        <div class="seed-actions">
+          <button class="pull-btn" data-id="${seed.id}">Pull Seeds</button>
+        </div>
+      `;
+      seedList.appendChild(card);
+    });
+
+    document.querySelectorAll('.pull-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        pullTargetId = btn.dataset.id;
+        document.getElementById('pullQty').value = 1;
+        pullModal.classList.add('open');
+      });
+    });
+  }
+
+  // ---- Add Strain/Seed Modal ----
+  document.getElementById('addBtn').addEventListener('click', () => {
+    document.getElementById('strainName').value = '';
+    document.getElementById('seedCount').value = 0;
+    document.getElementById('lowThreshold').value = 5;
+    addModal.classList.add('open');
+  });
+
+  document.getElementById('cancelAdd').addEventListener('click', () => {
+    addModal.classList.remove('open');
+  });
+
+  document.getElementById('saveAdd').addEventListener('click', async () => {
+    const name = document.getElementById('strainName').value.trim();
+    const count = parseInt(document.getElementById('seedCount').value, 10) || 0;
+    const type = document.getElementById('seedType').value;
+    const threshold = parseInt(document.getElementById('lowThreshold').value, 10) || 0;
+
+    if (!name){
+      alert('Give the strain a name first.');
+      return;
+    }
+
+    // Create the strain row first
+    const { data: strainData, error: strainError } = await sb
+      .from('strains')
+      .insert({ name })
+      .select()
+      .single();
+
+    if (strainError){
+      alert('Error saving strain: ' + strainError.message);
+      return;
+    }
+
+    // Then create the seed batch linked to it
+    const { error: seedError } = await sb
+      .from('seeds')
+      .insert({
+        strain_id: strainData.id,
+        count: count,
+        seed_type: type,
+        low_stock_threshold: threshold
+      });
+
+    if (seedError){
+      alert('Error saving seed batch: ' + seedError.message);
+      return;
+    }
+
+    addModal.classList.remove('open');
+    loadSeeds();
+  });
+
+  // ---- Pull Seeds Modal ----
+  document.getElementById('cancelPull').addEventListener('click', () => {
+    pullModal.classList.remove('open');
+    pullTargetId = null;
+  });
+
+  document.getElementById('confirmPull').addEventListener('click', async () => {
+    const qty = parseInt(document.getElementById('pullQty').value, 10) || 0;
+    if (qty <= 0 || !pullTargetId) return;
+
+    // Get current count first
+    const { data: current, error: fetchError } = await sb
+      .from('seeds')
+      .select('count')
+      .eq('id', pullTargetId)
+      .single();
+
+    if (fetchError){
+      alert('Error: ' + fetchError.message);
+      return;
+    }
+
+    const newCount = Math.max(0, current.count - qty);
+
+    const { error: updateError } = await sb
+      .from('seeds')
+      .update({ count: newCount })
+      .eq('id', pullTargetId);
+
+    if (updateError){
+      alert('Error: ' + updateError.message);
+      return;
+    }
+
+    pullModal.classList.remove('open');
+    pullTargetId = null;
+    loadSeeds();
   });
 </script>
 
