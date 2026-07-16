@@ -755,6 +755,7 @@
       <li><strong>Law enforcement &amp; government officials.</strong> Any request to access, inspect, copy, or seize data from this application by a law enforcement officer or government official must be accompanied by a valid warrant or other legally binding court order. Absent that, access is not authorized or consented to.</li>
       <li><strong>Hosting/server personnel.</strong> Employees, contractors, or agents of any hosting provider or server operator are not authorized to view, copy, modify, or disclose the contents of this application beyond what is strictly necessary for routine technical maintenance.</li>
       <li><strong>No implied consent.</strong> Nothing about the public availability of this page constitutes consent to search, seizure, or inspection of its contents.</li>
+      <li><strong>No illegal activity.</strong> This application is a recordkeeping tool only. Each user is solely responsible for ensuring their own activities comply with the laws of their jurisdiction, and bears full responsibility for their own actions — the owner of this application bears no responsibility or liability for how it is used.</li>
     </ol>
 
     <div class="final-line">If you do not agree to these terms, exit now. Continuing past this notice constitutes your binding agreement.</div>
@@ -840,6 +841,14 @@
       <div class="section-title" style="margin-top:0;">Backup</div>
       <p class="hint-text">Export everything in your grow tracker — strains, seed stock, tents, plants, and crosses — as one JSON file you can save somewhere safe.</p>
       <button id="exportBtn" class="action-btn">⬇ Export All Data (JSON)</button>
+
+      <div class="section-title">Restore</div>
+      <p class="hint-text">Load a backup file exported from this same tab. This <strong>erases everything currently in your grow tracker</strong> and replaces it with what's in the file — use it to move data to a new Supabase project or roll back a mistake.</p>
+      <div class="field">
+        <label for="restoreFile">Backup file</label>
+        <input type="file" id="restoreFile" accept="application/json">
+      </div>
+      <button id="restoreBtn" class="action-btn" style="background:var(--red);">⬆ Restore From Backup</button>
       <div id="backupStatus" class="status-msg"></div>
     </div>
   </div>
@@ -1010,13 +1019,20 @@
     enterBtn.disabled = true;
   }
 
+  // Some browsers restore a checkbox's checked state on reload/back-navigation
+  // without firing a change event, which left Enter stuck disabled even though
+  // the box looked ticked. Sync the button to the real checkbox state up front.
+  enterBtn.disabled = !checkbox.checked;
+
   if (localStorage.getItem(STORAGE_KEY) === 'true') {
     showApp();
   }
 
-  checkbox.addEventListener('change', () => {
+  function syncEnterBtn(){
     enterBtn.disabled = !checkbox.checked;
-  });
+  }
+  checkbox.addEventListener('change', syncEnterBtn);
+  checkbox.addEventListener('input', syncEnterBtn);
 
   enterBtn.addEventListener('click', () => {
     if (!checkbox.checked) return;
@@ -1740,6 +1756,60 @@
     URL.revokeObjectURL(url);
 
     status.textContent = 'Backup downloaded.';
+  });
+
+  document.getElementById('restoreBtn').addEventListener('click', async () => {
+    const status = document.getElementById('backupStatus');
+    const fileInput = document.getElementById('restoreFile');
+    const file = fileInput.files[0];
+
+    if (!file){
+      status.textContent = 'Choose a backup JSON file first.';
+      return;
+    }
+
+    if (!confirm('This will ERASE everything currently in your grow tracker and replace it with this backup file. This cannot be undone. Continue?')){
+      return;
+    }
+
+    status.textContent = 'Reading backup file...';
+    let backup;
+    try {
+      backup = JSON.parse(await file.text());
+    } catch (e){
+      status.textContent = "That file isn't valid JSON — nothing was changed.";
+      return;
+    }
+
+    const NIL = '00000000-0000-0000-0000-000000000000';
+
+    status.textContent = 'Clearing existing data...';
+    // Delete in reverse-dependency order so foreign keys never dangle mid-wipe.
+    for (const table of ['crosses', 'plants', 'seeds', 'tents', 'strains']){
+      const { error } = await sb.from(table).delete().neq('id', NIL);
+      if (error){
+        status.textContent = `Failed clearing ${table}: ${error.message}. Stopped before writing anything — your data may be partially cleared, check the tables directly if unsure.`;
+        return;
+      }
+    }
+
+    // Insert in dependency order: strains/tents first, then seeds/plants (which
+    // reference them), then crosses (which reference plants and strains).
+    const restoreOrder = ['strains', 'tents', 'seeds', 'plants', 'crosses'];
+    for (const table of restoreOrder){
+      const rows = backup[table];
+      if (!rows || rows.length === 0) continue;
+      status.textContent = `Restoring ${table}...`;
+      const { error } = await sb.from(table).insert(rows);
+      if (error){
+        status.textContent = `Failed restoring ${table}: ${error.message}. Earlier tables in the list were restored — check what's there before retrying.`;
+        return;
+      }
+    }
+
+    status.textContent = 'Restore complete.';
+    fileInput.value = '';
+    loadGarden();
   });
 </script>
 

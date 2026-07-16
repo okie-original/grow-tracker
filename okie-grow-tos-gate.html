@@ -165,6 +165,7 @@
       <li><strong>Law enforcement &amp; government officials.</strong> Any request to access, inspect, copy, or seize data from this application by a law enforcement officer or government official must be accompanied by a valid warrant or other legally binding court order. Absent that, access is not authorized or consented to.</li>
       <li><strong>Hosting/server personnel.</strong> Employees, contractors, or agents of any hosting provider or server operator are not authorized to view, copy, modify, or disclose the contents of this application beyond what is strictly necessary for routine technical maintenance.</li>
       <li><strong>No implied consent.</strong> Nothing about the public availability of this page constitutes consent to search, seizure, or inspection of its contents.</li>
+      <li><strong>No illegal activity.</strong> This application is a recordkeeping tool only. Each user is solely responsible for ensuring their own activities comply with the laws of their jurisdiction, and bears full responsibility for their own actions — the owner of this application bears no responsibility or liability for how it is used.</li>
     </ol>
 
     <div class="final-line">If you do not agree to these terms, exit now. Continuing past this notice constitutes your binding agreement.</div>
@@ -209,9 +210,16 @@
     showApp();
   }
 
-  checkbox.addEventListener('change', () => {
+  // Some browsers restore a checkbox's checked state on reload/back-navigation
+  // without firing a change event, which left Enter stuck disabled even though
+  // the box looked ticked. Sync the button to the real checkbox state up front.
+  enterBtn.disabled = !checkbox.checked;
+
+  function syncEnterBtn(){
     enterBtn.disabled = !checkbox.checked;
-  });
+  }
+  checkbox.addEventListener('change', syncEnterBtn);
+  checkbox.addEventListener('input', syncEnterBtn);
 
   enterBtn.addEventListener('click', () => {
     if (!checkbox.checked) return;
