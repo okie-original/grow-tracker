@@ -20,7 +20,15 @@
     --green:#4caf50;
     --yellow:#e8b32c;
     --red:#e05252;
+    --purple:#a06ee1;
+    --gray:#7a7a7a;
   }
+
+  html[data-theme="irie"]{ --accent:#2BAA4B; --accent-dark:#1f7d38; }
+  html[data-theme="blue"]{ --accent:#2f8fe0; --accent-dark:#1f6bb0; }
+  html[data-theme="green"]{ --accent:#43a047; --accent-dark:#2e7031; }
+  html[data-theme="red"]{ --accent:#e0483f; --accent-dark:#b23830; }
+  html[data-theme="purple"]{ --accent:#9757d1; --accent-dark:#6f3fa0; }
 
   *{box-sizing:border-box;}
 
@@ -131,32 +139,53 @@
     background:var(--accent-dark);
   }
 
-  /* ---------- APP ---------- */
+  /* ---------- APP SHELL ---------- */
   #app{
     display:none;
-    max-width:640px;
+    max-width:720px;
     width:100%;
     margin:0 auto;
   }
 
-  .app-header{
+  .brand{
     display:flex;
+    flex-direction:column;
     align-items:center;
-    justify-content:space-between;
-    margin-bottom:14px;
+    padding:10px 0 18px;
+    position:relative;
   }
 
-  .app-header h2{
-    font-family:'Fredoka', sans-serif;
-    color:var(--accent);
-    margin:0;
-    font-size:1.4rem;
+  .brand img{
+    width:130px;
+    height:130px;
+    border-radius:50%;
+    box-shadow:0 0 22px rgba(255,112,0,0.35), 0 0 0 1px var(--border);
+    transition:box-shadow 0.2s ease;
+  }
+  html[data-theme="irie"] .brand img{ box-shadow:0 0 22px rgba(43,170,75,0.35), 0 0 0 1px var(--border); }
+  html[data-theme="blue"] .brand img{ box-shadow:0 0 22px rgba(47,143,224,0.35), 0 0 0 1px var(--border); }
+  html[data-theme="green"] .brand img{ box-shadow:0 0 22px rgba(67,160,71,0.35), 0 0 0 1px var(--border); }
+  html[data-theme="red"] .brand img{ box-shadow:0 0 22px rgba(224,72,63,0.35), 0 0 0 1px var(--border); }
+  html[data-theme="purple"] .brand img{ box-shadow:0 0 22px rgba(151,87,209,0.35), 0 0 0 1px var(--border); }
+
+  #exitBtn{
+    position:absolute;
+    top:10px;
+    right:0;
+    background:none;
+    border:1px solid var(--border);
+    color:var(--text-dim);
+    padding:6px 12px;
+    border-radius:8px;
+    cursor:pointer;
+    font-family:'Nunito', sans-serif;
+    font-size:0.78rem;
   }
 
   .tab-nav{
     display:flex;
-    gap:8px;
-    margin-bottom:20px;
+    gap:6px;
+    margin-bottom:14px;
     background:var(--panel-2);
     border:1px solid var(--border);
     border-radius:12px;
@@ -165,20 +194,56 @@
 
   .tab-btn{
     flex:1;
-    padding:10px;
+    padding:10px 4px;
     border:none;
     background:none;
     color:var(--text-dim);
     font-family:'Fredoka', sans-serif;
     font-weight:600;
-    font-size:0.9rem;
+    font-size:0.82rem;
+    letter-spacing:0.3px;
     border-radius:8px;
     cursor:pointer;
+    text-transform:uppercase;
   }
 
   .tab-btn.active{
     background:var(--accent);
     color:#111;
+  }
+
+  .theme-row{
+    display:flex;
+    align-items:center;
+    gap:8px;
+    flex-wrap:wrap;
+    margin-bottom:22px;
+    padding:0 2px;
+  }
+
+  .theme-row .theme-label{
+    font-size:0.72rem;
+    color:var(--text-dim);
+    letter-spacing:1px;
+    margin-right:2px;
+  }
+
+  .theme-pill{
+    padding:5px 12px;
+    border-radius:20px;
+    border:1px solid var(--border);
+    background:var(--panel-2);
+    color:var(--text-dim);
+    font-size:0.68rem;
+    font-weight:700;
+    letter-spacing:0.5px;
+    cursor:pointer;
+    text-transform:uppercase;
+  }
+
+  .theme-pill.active{
+    border-color:var(--accent);
+    color:var(--accent);
   }
 
   .tab-pane{
@@ -189,12 +254,96 @@
     display:block;
   }
 
+  /* ---------- GARDEN ---------- */
+  .garden-header{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-bottom:16px;
+  }
+
+  .garden-header h2{
+    font-family:'Fredoka', sans-serif;
+    color:var(--accent);
+    margin:0;
+    font-size:1.15rem;
+    letter-spacing:0.5px;
+  }
+
+  .garden-header-actions{
+    display:flex;
+    gap:8px;
+  }
+
+  .pill-btn{
+    padding:10px 14px;
+    border-radius:10px;
+    border:1px solid var(--border);
+    background:var(--panel-2);
+    color:var(--text);
+    font-family:'Fredoka', sans-serif;
+    font-weight:600;
+    font-size:0.8rem;
+    cursor:pointer;
+    white-space:nowrap;
+  }
+
+  .pill-btn.primary{
+    background:var(--accent);
+    color:#111;
+    border-color:var(--accent);
+  }
+
+  .stats-row{
+    display:grid;
+    grid-template-columns:repeat(4, 1fr);
+    gap:10px;
+    margin-bottom:22px;
+  }
+
+  .stat-card{
+    background:var(--panel);
+    border:1px solid var(--border);
+    border-radius:12px;
+    padding:14px 6px;
+    text-align:center;
+  }
+
+  .stat-num{
+    font-family:'Fredoka', sans-serif;
+    font-size:1.6rem;
+    font-weight:700;
+    color:var(--accent);
+  }
+
+  .stat-label{
+    font-size:0.68rem;
+    color:var(--text-dim);
+    letter-spacing:0.5px;
+    text-transform:uppercase;
+    margin-top:2px;
+  }
+
+  .section-title{
+    font-size:0.72rem;
+    color:var(--text-dim);
+    letter-spacing:1.5px;
+    text-transform:uppercase;
+    margin:18px 0 10px;
+  }
+
+  .tent-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fill, minmax(220px, 1fr));
+    gap:12px;
+    margin-bottom:6px;
+  }
+
   .tent-card{
     background:var(--panel);
     border:1px solid var(--border);
     border-radius:12px;
-    padding:16px 18px;
-    margin-bottom:16px;
+    padding:14px 16px;
   }
 
   .tent-card-top{
@@ -206,12 +355,57 @@
 
   .tent-name{
     font-family:'Fredoka', sans-serif;
-    font-size:1.1rem;
+    font-size:1rem;
     font-weight:600;
     color:var(--accent);
   }
 
+  .tent-icons{
+    display:flex;
+    gap:8px;
+  }
+
+  .tent-icons button{
+    background:none;
+    border:none;
+    color:var(--text-dim);
+    cursor:pointer;
+    font-size:0.85rem;
+    padding:2px;
+  }
+
+  .tent-icons button:hover{
+    color:var(--text);
+  }
+
+  .tent-mini-stats{
+    display:flex;
+    gap:8px;
+    margin-bottom:10px;
+  }
+
+  .tent-mini{
+    flex:1;
+    text-align:center;
+    background:var(--panel-2);
+    border-radius:8px;
+    padding:6px 2px;
+  }
+
+  .tent-mini-num{
+    font-family:'Fredoka', sans-serif;
+    font-weight:700;
+    font-size:1rem;
+  }
+
+  .tent-mini-label{
+    font-size:0.6rem;
+    color:var(--text-dim);
+    text-transform:uppercase;
+  }
+
   .water-all-btn{
+    width:100%;
     padding:10px 14px;
     border-radius:8px;
     border:1px solid var(--border);
@@ -219,7 +413,7 @@
     color:var(--text);
     font-family:'Nunito', sans-serif;
     font-weight:600;
-    font-size:0.85rem;
+    font-size:0.82rem;
     cursor:pointer;
   }
 
@@ -227,26 +421,77 @@
     background:#252525;
   }
 
-  .plant-row{
+  .filter-chips{
     display:flex;
-    justify-content:space-between;
-    align-items:center;
-    padding:10px 0;
-    border-top:1px solid var(--border);
+    gap:8px;
+    flex-wrap:wrap;
+    margin:16px 0 14px;
   }
 
-  .plant-row:first-of-type{
-    border-top:none;
+  .filter-chip{
+    padding:7px 14px;
+    border-radius:20px;
+    border:1px solid var(--border);
+    background:var(--panel-2);
+    color:var(--text-dim);
+    font-size:0.78rem;
+    font-weight:600;
+    cursor:pointer;
+    white-space:nowrap;
+  }
+
+  .filter-chip.active{
+    background:var(--accent);
+    color:#111;
+    border-color:var(--accent);
+  }
+
+  .plant-card{
+    background:var(--panel);
+    border:1px solid var(--border);
+    border-left:5px solid var(--gray);
+    border-radius:12px;
+    padding:14px 16px;
+    margin-bottom:12px;
+    position:relative;
+  }
+
+  .plant-card.stage-seedling, .plant-card.stage-veg{ border-left-color:var(--green); }
+  .plant-card.stage-flower{ border-left-color:var(--purple); }
+  .plant-card.stage-ready{ border-left-color:var(--yellow); }
+  .plant-card.stage-harvested{ border-left-color:var(--gray); }
+
+  .plant-card-top{
+    display:flex;
+    justify-content:space-between;
+    align-items:flex-start;
+    margin-bottom:8px;
   }
 
   .plant-name{
+    font-family:'Fredoka', sans-serif;
     font-weight:600;
-    font-size:0.95rem;
+    font-size:1rem;
   }
 
   .plant-meta{
     color:var(--text-dim);
-    font-size:0.8rem;
+    font-size:0.78rem;
+    margin-top:2px;
+  }
+
+  .delete-x{
+    background:none;
+    border:none;
+    color:var(--text-dim);
+    font-size:1rem;
+    cursor:pointer;
+    line-height:1;
+    padding:2px 4px;
+  }
+
+  .delete-x:hover{
+    color:var(--red);
   }
 
   .stage-pill{
@@ -255,70 +500,46 @@
     border-radius:20px;
     background:var(--panel-2);
     border:1px solid var(--border);
-    font-size:0.75rem;
+    font-size:0.72rem;
     color:var(--text-dim);
+    text-transform:uppercase;
+    font-weight:700;
+    letter-spacing:0.3px;
   }
 
-  .cross-card{
-    background:var(--panel);
-    border:1px solid var(--border);
-    border-radius:12px;
-    padding:16px 18px;
-    margin-bottom:14px;
+  .plant-card.stage-seedling .stage-pill, .plant-card.stage-veg .stage-pill{ color:var(--green); border-color:var(--green); }
+  .plant-card.stage-flower .stage-pill{ color:var(--purple); border-color:var(--purple); }
+  .plant-card.stage-ready .stage-pill{ color:var(--yellow); border-color:var(--yellow); }
+
+  .plant-controls{
+    display:flex;
+    gap:8px;
+    margin-top:10px;
   }
 
-  .cross-title{
-    font-family:'Fredoka', sans-serif;
-    font-size:1.05rem;
-    font-weight:600;
-    color:var(--accent);
-    margin-bottom:4px;
-  }
-
-  .cross-meta{
-    color:var(--text-dim);
-    font-size:0.82rem;
-    margin-bottom:8px;
-  }
-
-  .cross-notes{
-    font-size:0.9rem;
-    line-height:1.4;
-  }
-
-  #exitBtn{
-    background:none;
-    border:1px solid var(--border);
-    color:var(--text-dim);
-    padding:8px 14px;
+  .plant-controls select{
+    flex:1;
+    padding:8px 10px;
     border-radius:8px;
-    cursor:pointer;
+    border:1px solid var(--border);
+    background:var(--panel-2);
+    color:var(--text);
     font-family:'Nunito', sans-serif;
-    font-size:0.85rem;
+    font-size:0.82rem;
   }
 
-  #addBtn, .action-btn{
-    width:100%;
-    padding:16px;
-    margin-bottom:12px;
-    font-family:'Fredoka', sans-serif;
-    font-size:1rem;
-    font-weight:600;
-    color:#111;
-    background:var(--accent);
-    border:none;
-    border-radius:12px;
-    cursor:pointer;
-  }
-
-  #addBtn:active, .action-btn:active{
-    background:var(--accent-dark);
-  }
-
+  /* ---------- SHARED CARDS (seed vault / breeding) ---------- */
   .status-msg{
     text-align:center;
     color:var(--text-dim);
     padding:30px 0;
+  }
+
+  .hint-text{
+    color:var(--text-dim);
+    font-size:0.85rem;
+    margin-bottom:14px;
+    line-height:1.4;
   }
 
   .seed-card{
@@ -388,6 +609,51 @@
     background:#252525;
   }
 
+  .cross-card{
+    background:var(--panel);
+    border:1px solid var(--border);
+    border-radius:12px;
+    padding:16px 18px;
+    margin-bottom:14px;
+  }
+
+  .cross-title{
+    font-family:'Fredoka', sans-serif;
+    font-size:1.05rem;
+    font-weight:600;
+    color:var(--accent);
+    margin-bottom:4px;
+  }
+
+  .cross-meta{
+    color:var(--text-dim);
+    font-size:0.82rem;
+    margin-bottom:8px;
+  }
+
+  .cross-notes{
+    font-size:0.9rem;
+    line-height:1.4;
+  }
+
+  #addBtn, .action-btn{
+    width:100%;
+    padding:16px;
+    margin-bottom:12px;
+    font-family:'Fredoka', sans-serif;
+    font-size:1rem;
+    font-weight:600;
+    color:#111;
+    background:var(--accent);
+    border:none;
+    border-radius:12px;
+    cursor:pointer;
+  }
+
+  #addBtn:active, .action-btn:active{
+    background:var(--accent-dark);
+  }
+
   /* ---------- MODAL (add / pull) ---------- */
   .modal-overlay{
     display:none;
@@ -411,6 +677,8 @@
     padding:22px;
     max-width:420px;
     width:100%;
+    max-height:90vh;
+    overflow-y:auto;
   }
 
   .modal-box h3{
@@ -467,6 +735,13 @@
     color:var(--text-dim);
     border:1px solid var(--border);
   }
+
+  @media (max-width:480px){
+    .stats-row{ grid-template-columns:repeat(2, 1fr); }
+    .garden-header{ flex-direction:column; align-items:flex-start; gap:10px; }
+    .garden-header-actions{ width:100%; }
+    .garden-header-actions .pill-btn{ flex:1; }
+  }
 </style>
 </head>
 <body>
@@ -493,31 +768,62 @@
   </div>
 
   <div id="app">
-    <div class="app-header">
-      <h2>Okie Original Grow Tracker</h2>
+    <div class="brand">
       <button id="exitBtn">Log out / Re-lock</button>
+      <img src="logo.jpg" alt="Okie Original">
     </div>
 
     <div class="tab-nav">
-      <button class="tab-btn active" data-tab="seedTab">Seed Vault</button>
-      <button class="tab-btn" data-tab="plantsTab">Plants / Tents</button>
+      <button class="tab-btn active" data-tab="gardenTab">Garden</button>
+      <button class="tab-btn" data-tab="seedTab">Seed Vault</button>
       <button class="tab-btn" data-tab="breedingTab">Breeding</button>
+      <button class="tab-btn" data-tab="backupTab">Backup</button>
     </div>
 
-    <!-- SEED VAULT TAB -->
-    <div class="tab-pane active" id="seedTab">
-      <button id="addBtn">+ Add Strain / Seed Batch</button>
-      <div id="seedList">
-        <div class="status-msg">Loading your seed stock...</div>
+    <div class="theme-row">
+      <span class="theme-label">THEME</span>
+      <button class="theme-pill" data-theme="orange">Orange</button>
+      <button class="theme-pill" data-theme="irie">Irie</button>
+      <button class="theme-pill" data-theme="blue">Blue</button>
+      <button class="theme-pill" data-theme="green">Green</button>
+      <button class="theme-pill" data-theme="red">Red</button>
+      <button class="theme-pill" data-theme="purple">Purple</button>
+    </div>
+
+    <!-- GARDEN TAB -->
+    <div class="tab-pane active" id="gardenTab">
+      <div class="garden-header">
+        <h2>Your Garden</h2>
+        <div class="garden-header-actions">
+          <button id="addTentBtn" class="pill-btn">+ Tent</button>
+          <button id="addPlantBtn" class="pill-btn primary">+ Add Plant</button>
+        </div>
+      </div>
+
+      <div class="stats-row">
+        <div class="stat-card"><div class="stat-num" id="statTotal">0</div><div class="stat-label">Total</div></div>
+        <div class="stat-card"><div class="stat-num" id="statActive">0</div><div class="stat-label">Active</div></div>
+        <div class="stat-card"><div class="stat-num" id="statFlowering">0</div><div class="stat-label">Flowering</div></div>
+        <div class="stat-card"><div class="stat-num" id="statReady">0</div><div class="stat-label">Ready</div></div>
+      </div>
+
+      <div class="section-title">Tents</div>
+      <div class="tent-grid" id="tentGrid">
+        <div class="status-msg">Loading your tents...</div>
+      </div>
+
+      <div class="filter-chips" id="filterChips"></div>
+
+      <div id="plantList">
+        <div class="status-msg">Loading your plants...</div>
       </div>
     </div>
 
-    <!-- PLANTS / TENTS TAB -->
-    <div class="tab-pane" id="plantsTab">
-      <button id="addTentBtn" class="action-btn">+ Add Tent</button>
-      <button id="addPlantBtn" class="action-btn">+ Add Plant</button>
-      <div id="tentList" style="margin-top:16px;">
-        <div class="status-msg">Loading your tents...</div>
+    <!-- SEED VAULT TAB -->
+    <div class="tab-pane" id="seedTab">
+      <button id="addBtn">+ Add Strain / Seed Batch</button>
+      <div id="seedList">
+        <div class="status-msg">Loading your seed stock...</div>
       </div>
     </div>
 
@@ -528,9 +834,17 @@
         <div class="status-msg">Loading your crosses...</div>
       </div>
     </div>
+
+    <!-- BACKUP TAB -->
+    <div class="tab-pane" id="backupTab">
+      <div class="section-title" style="margin-top:0;">Backup</div>
+      <p class="hint-text">Export everything in your grow tracker — strains, seed stock, tents, plants, and crosses — as one JSON file you can save somewhere safe.</p>
+      <button id="exportBtn" class="action-btn">⬇ Export All Data (JSON)</button>
+      <div id="backupStatus" class="status-msg"></div>
+    </div>
   </div>
 
-  <!-- Add / Edit Modal -->
+  <!-- Add / Edit Seed Modal -->
   <div class="modal-overlay" id="addModal">
     <div class="modal-box">
       <h3>Add Strain / Seed Batch</h3>
@@ -609,6 +923,7 @@
           <option value="seedling">Seedling</option>
           <option value="veg">Veg</option>
           <option value="flower">Flower</option>
+          <option value="ready">Ready</option>
           <option value="harvested">Harvested</option>
         </select>
       </div>
@@ -660,6 +975,20 @@
   const SUPABASE_KEY = 'sb_publishable_-rFuGpJFY-ToQ94dKqOgBw_Q3NMS3J7';
   const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
+  // ---------- THEME ----------
+  const THEME_KEY = 'okie_grow_theme';
+  function applyTheme(theme){
+    document.documentElement.setAttribute('data-theme', theme === 'orange' ? '' : theme);
+    document.querySelectorAll('.theme-pill').forEach(p => {
+      p.classList.toggle('active', p.dataset.theme === theme);
+    });
+    localStorage.setItem(THEME_KEY, theme);
+  }
+  document.querySelectorAll('.theme-pill').forEach(btn => {
+    btn.addEventListener('click', () => applyTheme(btn.dataset.theme));
+  });
+  applyTheme(localStorage.getItem(THEME_KEY) || 'orange');
+
   // ---------- GATE LOGIC ----------
   const STORAGE_KEY = 'okie_grow_tos_accepted';
   const gate = document.getElementById('gate');
@@ -671,7 +1000,7 @@
   function showApp(){
     gate.style.display = 'none';
     app.style.display = 'block';
-    loadSeeds();
+    loadGarden();
   }
 
   function showGate(){
@@ -700,6 +1029,366 @@
     showGate();
   });
 
+  // ---------- TAB SWITCHING ----------
+  document.querySelectorAll('.tab-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
+      btn.classList.add('active');
+      document.getElementById(btn.dataset.tab).classList.add('active');
+
+      if (btn.dataset.tab === 'gardenTab'){
+        loadGarden();
+      }
+      if (btn.dataset.tab === 'seedTab'){
+        loadSeeds();
+      }
+      if (btn.dataset.tab === 'breedingTab'){
+        loadCrosses();
+      }
+    });
+  });
+
+  // ---------- GARDEN LOGIC ----------
+  const tentGrid = document.getElementById('tentGrid');
+  const filterChips = document.getElementById('filterChips');
+  const plantList = document.getElementById('plantList');
+  const addTentModal = document.getElementById('addTentModal');
+  const addPlantModal = document.getElementById('addPlantModal');
+  let currentFilter = 'all';
+  let cachedTents = [];
+  let cachedPlants = [];
+
+  async function loadGarden(){
+    tentGrid.innerHTML = '<div class="status-msg">Loading your tents...</div>';
+    plantList.innerHTML = '<div class="status-msg">Loading your plants...</div>';
+
+    const { data: tents, error: tentError } = await sb
+      .from('tents')
+      .select('id, name')
+      .order('created_at', { ascending: true });
+
+    if (tentError){
+      tentGrid.innerHTML = `<div class="status-msg">Couldn't load tents: ${tentError.message}</div>`;
+      return;
+    }
+
+    const { data: plants, error: plantError } = await sb
+      .from('plants')
+      .select('id, stage, tent_id, planted_date, last_watered_at, strains(name)')
+      .order('created_at', { ascending: false });
+
+    if (plantError){
+      plantList.innerHTML = `<div class="status-msg">Couldn't load plants: ${plantError.message}</div>`;
+      return;
+    }
+
+    cachedTents = tents || [];
+    cachedPlants = plants || [];
+
+    renderStats();
+    renderTents();
+    renderFilterChips();
+    renderPlantList();
+  }
+
+  function renderStats(){
+    const total = cachedPlants.length;
+    const active = cachedPlants.filter(p => p.stage !== 'harvested').length;
+    const flowering = cachedPlants.filter(p => p.stage === 'flower').length;
+    const ready = cachedPlants.filter(p => p.stage === 'ready').length;
+
+    document.getElementById('statTotal').textContent = total;
+    document.getElementById('statActive').textContent = active;
+    document.getElementById('statFlowering').textContent = flowering;
+    document.getElementById('statReady').textContent = ready;
+  }
+
+  function renderTents(){
+    if (cachedTents.length === 0){
+      tentGrid.innerHTML = '<div class="status-msg">No tents yet. Add one above.</div>';
+      return;
+    }
+
+    tentGrid.innerHTML = '';
+    cachedTents.forEach(tent => {
+      const tentPlants = cachedPlants.filter(p => p.tent_id === tent.id);
+      const plantCount = tentPlants.length;
+      const flowerCount = tentPlants.filter(p => p.stage === 'flower').length;
+      const vegCount = tentPlants.filter(p => p.stage === 'veg' || p.stage === 'seedling').length;
+
+      const card = document.createElement('div');
+      card.className = 'tent-card';
+      card.innerHTML = `
+        <div class="tent-card-top">
+          <div class="tent-name">${tent.name}</div>
+          <div class="tent-icons">
+            <button class="tent-rename-btn" data-id="${tent.id}" data-name="${tent.name}" title="Rename">✎</button>
+            <button class="tent-delete-btn" data-id="${tent.id}" title="Delete">×</button>
+          </div>
+        </div>
+        <div class="tent-mini-stats">
+          <div class="tent-mini"><div class="tent-mini-num">${plantCount}</div><div class="tent-mini-label">Plants</div></div>
+          <div class="tent-mini"><div class="tent-mini-num">${flowerCount}</div><div class="tent-mini-label">Flower</div></div>
+          <div class="tent-mini"><div class="tent-mini-num">${vegCount}</div><div class="tent-mini-label">Veg</div></div>
+        </div>
+        <button class="water-all-btn" data-tent="${tent.id}">Water All</button>
+      `;
+      tentGrid.appendChild(card);
+    });
+
+    document.querySelectorAll('.water-all-btn').forEach(btn => {
+      btn.addEventListener('click', async () => {
+        const tentId = btn.dataset.tent;
+        const { error } = await sb
+          .from('plants')
+          .update({ last_watered_at: new Date().toISOString() })
+          .eq('tent_id', tentId);
+
+        if (error){
+          alert('Error watering tent: ' + error.message);
+          return;
+        }
+        btn.textContent = 'Watered!';
+        setTimeout(() => { btn.textContent = 'Water All'; }, 1500);
+        loadGarden();
+      });
+    });
+
+    document.querySelectorAll('.tent-rename-btn').forEach(btn => {
+      btn.addEventListener('click', async () => {
+        const newName = prompt('Rename tent:', btn.dataset.name);
+        if (!newName || !newName.trim()) return;
+        const { error } = await sb.from('tents').update({ name: newName.trim() }).eq('id', btn.dataset.id);
+        if (error){
+          alert('Error renaming tent: ' + error.message);
+          return;
+        }
+        loadGarden();
+      });
+    });
+
+    document.querySelectorAll('.tent-delete-btn').forEach(btn => {
+      btn.addEventListener('click', async () => {
+        if (!confirm('Delete this tent? Plants inside it will become unassigned, not deleted.')) return;
+        const tentId = btn.dataset.id;
+
+        const { error: unassignError } = await sb
+          .from('plants')
+          .update({ tent_id: null })
+          .eq('tent_id', tentId);
+
+        if (unassignError){
+          alert('Error unassigning plants: ' + unassignError.message);
+          return;
+        }
+
+        const { error } = await sb.from('tents').delete().eq('id', tentId);
+        if (error){
+          alert('Error deleting tent: ' + error.message);
+          return;
+        }
+        loadGarden();
+      });
+    });
+  }
+
+  function renderFilterChips(){
+    let chips = [{ id: 'all', label: 'All Plants' }];
+    cachedTents.forEach(t => chips.push({ id: t.id, label: t.name }));
+    chips.push({ id: 'unassigned', label: 'Unassigned' });
+
+    filterChips.innerHTML = chips.map(c =>
+      `<button class="filter-chip ${currentFilter === c.id ? 'active' : ''}" data-filter="${c.id}">${c.label}</button>`
+    ).join('');
+
+    document.querySelectorAll('.filter-chip').forEach(btn => {
+      btn.addEventListener('click', () => {
+        currentFilter = btn.dataset.filter;
+        renderFilterChips();
+        renderPlantList();
+      });
+    });
+  }
+
+  function daysSince(dateStr){
+    if (!dateStr) return null;
+    const then = new Date(dateStr);
+    const now = new Date();
+    return Math.max(0, Math.floor((now - then) / (1000 * 60 * 60 * 24)));
+  }
+
+  function renderPlantList(){
+    let filtered = cachedPlants;
+    if (currentFilter === 'unassigned'){
+      filtered = cachedPlants.filter(p => !p.tent_id);
+    } else if (currentFilter !== 'all'){
+      filtered = cachedPlants.filter(p => p.tent_id === currentFilter);
+    }
+
+    if (filtered.length === 0){
+      plantList.innerHTML = '<div class="status-msg">No plants here yet.</div>';
+      return;
+    }
+
+    const tentOptions = cachedTents.map(t => `<option value="${t.id}">${t.name}</option>`).join('');
+
+    plantList.innerHTML = filtered.map(p => {
+      const stage = p.stage || 'seedling';
+      const days = daysSince(p.planted_date);
+      const watered = p.last_watered_at ? daysSince(p.last_watered_at) : null;
+      return `
+        <div class="plant-card stage-${stage}">
+          <div class="plant-card-top">
+            <div>
+              <div class="plant-name">${p.strains ? p.strains.name : 'Unknown strain'}</div>
+              <div class="plant-meta">${days !== null ? days + ' days in' : 'No planted date set'}${watered !== null ? ' · watered ' + watered + 'd ago' : ''}</div>
+            </div>
+            <div style="display:flex; align-items:center; gap:8px;">
+              <span class="stage-pill">${stage}</span>
+              <button class="delete-x" data-plant="${p.id}" title="Delete plant">×</button>
+            </div>
+          </div>
+          <div class="plant-controls">
+            <select class="plant-tent-select" data-plant="${p.id}">
+              <option value="">Unassigned</option>
+              ${tentOptions}
+            </select>
+            <select class="plant-stage-select" data-plant="${p.id}">
+              <option value="seedling">Seedling</option>
+              <option value="veg">Veg</option>
+              <option value="flower">Flower</option>
+              <option value="ready">Ready</option>
+              <option value="harvested">Harvested</option>
+            </select>
+          </div>
+        </div>
+      `;
+    }).join('');
+
+    document.querySelectorAll('.plant-tent-select').forEach(sel => {
+      const plant = cachedPlants.find(p => p.id === sel.dataset.plant);
+      sel.value = plant && plant.tent_id ? plant.tent_id : '';
+      sel.addEventListener('change', async () => {
+        const { error } = await sb
+          .from('plants')
+          .update({ tent_id: sel.value || null })
+          .eq('id', sel.dataset.plant);
+        if (error){
+          alert('Error moving plant: ' + error.message);
+          return;
+        }
+        loadGarden();
+      });
+    });
+
+    document.querySelectorAll('.plant-stage-select').forEach(sel => {
+      const plant = cachedPlants.find(p => p.id === sel.dataset.plant);
+      sel.value = plant ? (plant.stage || 'seedling') : 'seedling';
+      sel.addEventListener('change', async () => {
+        const { error } = await sb
+          .from('plants')
+          .update({ stage: sel.value })
+          .eq('id', sel.dataset.plant);
+        if (error){
+          alert('Error updating stage: ' + error.message);
+          return;
+        }
+        loadGarden();
+      });
+    });
+
+    document.querySelectorAll('.delete-x[data-plant]').forEach(btn => {
+      btn.addEventListener('click', async () => {
+        if (!confirm('Delete this plant? This cannot be undone.')) return;
+        const { error } = await sb.from('plants').delete().eq('id', btn.dataset.plant);
+        if (error){
+          alert('Error deleting plant: ' + error.message);
+          return;
+        }
+        loadGarden();
+      });
+    });
+  }
+
+  async function populateStrainAndTentDropdowns(){
+    const strainSelect = document.getElementById('plantStrainSelect');
+    const tentSelect = document.getElementById('plantTentSelect');
+
+    const { data: strains } = await sb.from('strains').select('id, name').order('name');
+    const { data: tents } = await sb.from('tents').select('id, name').order('name');
+
+    strainSelect.innerHTML = (strains || []).map(s => `<option value="${s.id}">${s.name}</option>`).join('')
+      || '<option value="">No strains yet — add one in Seed Vault first</option>';
+
+    tentSelect.innerHTML = '<option value="">Unassigned</option>' +
+      (tents || []).map(t => `<option value="${t.id}">${t.name}</option>`).join('');
+  }
+
+  document.getElementById('addTentBtn').addEventListener('click', () => {
+    document.getElementById('tentName').value = '';
+    addTentModal.classList.add('open');
+  });
+
+  document.getElementById('cancelTent').addEventListener('click', () => {
+    addTentModal.classList.remove('open');
+  });
+
+  document.getElementById('saveTent').addEventListener('click', async () => {
+    const name = document.getElementById('tentName').value.trim();
+    if (!name){
+      alert('Give the tent a name first.');
+      return;
+    }
+
+    const { error } = await sb.from('tents').insert({ name });
+    if (error){
+      alert('Error saving tent: ' + error.message);
+      return;
+    }
+
+    addTentModal.classList.remove('open');
+    loadGarden();
+  });
+
+  document.getElementById('addPlantBtn').addEventListener('click', async () => {
+    await populateStrainAndTentDropdowns();
+    document.getElementById('plantStage').value = 'seedling';
+    document.getElementById('plantedDate').value = new Date().toISOString().split('T')[0];
+    addPlantModal.classList.add('open');
+  });
+
+  document.getElementById('cancelPlant').addEventListener('click', () => {
+    addPlantModal.classList.remove('open');
+  });
+
+  document.getElementById('savePlant').addEventListener('click', async () => {
+    const strainId = document.getElementById('plantStrainSelect').value;
+    const tentId = document.getElementById('plantTentSelect').value;
+    const stage = document.getElementById('plantStage').value;
+    const plantedDate = document.getElementById('plantedDate').value;
+
+    if (!strainId){
+      alert('You need at least one strain set up first (add one in Seed Vault).');
+      return;
+    }
+
+    const { error } = await sb.from('plants').insert({
+      strain_id: strainId,
+      tent_id: tentId || null,
+      stage: stage,
+      planted_date: plantedDate || null
+    });
+
+    if (error){
+      alert('Error saving plant: ' + error.message);
+      return;
+    }
+
+    addPlantModal.classList.remove('open');
+    loadGarden();
+  });
+
   // ---------- SEED VAULT LOGIC ----------
   const seedList = document.getElementById('seedList');
   const addModal = document.getElementById('addModal');
@@ -710,7 +1399,6 @@
   async function loadSeeds(){
     seedList.innerHTML = '<div class="status-msg">Loading your seed stock...</div>';
 
-    // Pull seeds joined with their strain name
     const { data, error } = await sb
       .from('seeds')
       .select('id, count, seed_type, low_stock_threshold, strains(id, name)')
@@ -801,7 +1489,6 @@
     }
 
     if (editSeedId){
-      // Editing an existing seed batch — update the strain name and the seed row
       const { error: strainError } = await sb
         .from('strains')
         .update({ name })
@@ -832,7 +1519,6 @@
       return;
     }
 
-    // Create the strain row first
     const { data: strainData, error: strainError } = await sb
       .from('strains')
       .insert({ name })
@@ -844,7 +1530,6 @@
       return;
     }
 
-    // Then create the seed batch linked to it
     const { error: seedError } = await sb
       .from('seeds')
       .insert({
@@ -873,7 +1558,6 @@
     const qty = parseInt(document.getElementById('pullQty').value, 10) || 0;
     if (qty <= 0 || !pullTargetId) return;
 
-    // Get current count first
     const { data: current, error: fetchError } = await sb
       .from('seeds')
       .select('count')
@@ -900,182 +1584,6 @@
     pullModal.classList.remove('open');
     pullTargetId = null;
     loadSeeds();
-  });
-
-  // ---------- TAB SWITCHING ----------
-  document.querySelectorAll('.tab-btn').forEach(btn => {
-    btn.addEventListener('click', () => {
-      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-      document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
-      btn.classList.add('active');
-      document.getElementById(btn.dataset.tab).classList.add('active');
-
-      if (btn.dataset.tab === 'plantsTab'){
-        loadTents();
-      }
-      if (btn.dataset.tab === 'breedingTab'){
-        loadCrosses();
-      }
-    });
-  });
-
-  // ---------- PLANTS / TENTS LOGIC ----------
-  const tentList = document.getElementById('tentList');
-  const addTentModal = document.getElementById('addTentModal');
-  const addPlantModal = document.getElementById('addPlantModal');
-
-  async function loadTents(){
-    tentList.innerHTML = '<div class="status-msg">Loading your tents...</div>';
-
-    const { data: tents, error: tentError } = await sb
-      .from('tents')
-      .select('id, name')
-      .order('created_at', { ascending: true });
-
-    if (tentError){
-      tentList.innerHTML = `<div class="status-msg">Couldn't load tents: ${tentError.message}</div>`;
-      return;
-    }
-
-    const { data: plants, error: plantError } = await sb
-      .from('plants')
-      .select('id, stage, tent_id, planted_date, strains(name)')
-      .order('created_at', { ascending: false });
-
-    if (plantError){
-      tentList.innerHTML = `<div class="status-msg">Couldn't load plants: ${plantError.message}</div>`;
-      return;
-    }
-
-    if (!tents || tents.length === 0){
-      tentList.innerHTML = '<div class="status-msg">No tents yet. Add one above.</div>';
-      return;
-    }
-
-    tentList.innerHTML = '';
-    tents.forEach(tent => {
-      const tentPlants = (plants || []).filter(p => p.tent_id === tent.id);
-
-      const card = document.createElement('div');
-      card.className = 'tent-card';
-
-      let plantsHtml = '<div class="status-msg" style="padding:10px 0;">No plants in this tent yet.</div>';
-      if (tentPlants.length > 0){
-        plantsHtml = tentPlants.map(p => `
-          <div class="plant-row">
-            <div>
-              <div class="plant-name">${p.strains ? p.strains.name : 'Unknown strain'}</div>
-              <div class="plant-meta">${p.planted_date ? 'Planted ' + p.planted_date : ''}</div>
-            </div>
-            <span class="stage-pill">${p.stage || 'unset'}</span>
-          </div>
-        `).join('');
-      }
-
-      card.innerHTML = `
-        <div class="tent-card-top">
-          <div class="tent-name">${tent.name}</div>
-          <button class="water-all-btn" data-tent="${tent.id}">Water All</button>
-        </div>
-        ${plantsHtml}
-      `;
-      tentList.appendChild(card);
-    });
-
-    document.querySelectorAll('.water-all-btn').forEach(btn => {
-      btn.addEventListener('click', async () => {
-        const tentId = btn.dataset.tent;
-        const { error } = await sb
-          .from('plants')
-          .update({ last_watered_at: new Date().toISOString() })
-          .eq('tent_id', tentId);
-
-        if (error){
-          alert('Error watering tent: ' + error.message);
-          return;
-        }
-        btn.textContent = 'Watered!';
-        setTimeout(() => { btn.textContent = 'Water All'; }, 1500);
-      });
-    });
-  }
-
-  async function populateStrainAndTentDropdowns(){
-    const strainSelect = document.getElementById('plantStrainSelect');
-    const tentSelect = document.getElementById('plantTentSelect');
-
-    const { data: strains } = await sb.from('strains').select('id, name').order('name');
-    const { data: tents } = await sb.from('tents').select('id, name').order('name');
-
-    strainSelect.innerHTML = (strains || []).map(s => `<option value="${s.id}">${s.name}</option>`).join('')
-      || '<option value="">No strains yet — add one in Seed Vault first</option>';
-
-    tentSelect.innerHTML = (tents || []).map(t => `<option value="${t.id}">${t.name}</option>`).join('')
-      || '<option value="">No tents yet — add one first</option>';
-  }
-
-  document.getElementById('addTentBtn').addEventListener('click', () => {
-    document.getElementById('tentName').value = '';
-    addTentModal.classList.add('open');
-  });
-
-  document.getElementById('cancelTent').addEventListener('click', () => {
-    addTentModal.classList.remove('open');
-  });
-
-  document.getElementById('saveTent').addEventListener('click', async () => {
-    const name = document.getElementById('tentName').value.trim();
-    if (!name){
-      alert('Give the tent a name first.');
-      return;
-    }
-
-    const { error } = await sb.from('tents').insert({ name });
-    if (error){
-      alert('Error saving tent: ' + error.message);
-      return;
-    }
-
-    addTentModal.classList.remove('open');
-    loadTents();
-  });
-
-  document.getElementById('addPlantBtn').addEventListener('click', async () => {
-    await populateStrainAndTentDropdowns();
-    document.getElementById('plantStage').value = 'seedling';
-    document.getElementById('plantedDate').value = new Date().toISOString().split('T')[0];
-    addPlantModal.classList.add('open');
-  });
-
-  document.getElementById('cancelPlant').addEventListener('click', () => {
-    addPlantModal.classList.remove('open');
-  });
-
-  document.getElementById('savePlant').addEventListener('click', async () => {
-    const strainId = document.getElementById('plantStrainSelect').value;
-    const tentId = document.getElementById('plantTentSelect').value;
-    const stage = document.getElementById('plantStage').value;
-    const plantedDate = document.getElementById('plantedDate').value;
-
-    if (!strainId || !tentId){
-      alert('You need at least one strain and one tent set up first.');
-      return;
-    }
-
-    const { error } = await sb.from('plants').insert({
-      strain_id: strainId,
-      tent_id: tentId,
-      stage: stage,
-      planted_date: plantedDate || null
-    });
-
-    if (error){
-      alert('Error saving plant: ' + error.message);
-      return;
-    }
-
-    addPlantModal.classList.remove('open');
-    loadTents();
   });
 
   // ---------- BREEDING LOGIC ----------
@@ -1130,7 +1638,7 @@
 
     const options = (plants || [])
       .map(p => `<option value="${p.id}">${p.strains ? p.strains.name : 'Unknown'} (${p.id.slice(0,8)})</option>`)
-      .join('') || '<option value="">No plants yet — add one in Plants/Tents first</option>';
+      .join('') || '<option value="">No plants yet — add one in Garden first</option>';
 
     document.getElementById('crossMomSelect').innerHTML = options;
     document.getElementById('crossDadSelect').innerHTML = options;
@@ -1190,6 +1698,48 @@
 
     addCrossModal.classList.remove('open');
     loadCrosses();
+  });
+
+  // ---------- BACKUP LOGIC ----------
+  document.getElementById('exportBtn').addEventListener('click', async () => {
+    const status = document.getElementById('backupStatus');
+    status.textContent = 'Gathering your data...';
+
+    const [strains, seeds, tents, plants, crosses] = await Promise.all([
+      sb.from('strains').select('*'),
+      sb.from('seeds').select('*'),
+      sb.from('tents').select('*'),
+      sb.from('plants').select('*'),
+      sb.from('crosses').select('*')
+    ]);
+
+    const failed = [strains, seeds, tents, plants, crosses].find(r => r.error);
+    if (failed){
+      status.textContent = 'Backup failed: ' + failed.error.message;
+      return;
+    }
+
+    const backup = {
+      exported_at: new Date().toISOString(),
+      strains: strains.data,
+      seeds: seeds.data,
+      tents: tents.data,
+      plants: plants.data,
+      crosses: crosses.data
+    };
+
+    const blob = new Blob([JSON.stringify(backup, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    const dateStamp = new Date().toISOString().split('T')[0];
+    a.href = url;
+    a.download = `okie-grow-backup-${dateStamp}.json`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+
+    status.textContent = 'Backup downloaded.';
   });
 </script>
 
