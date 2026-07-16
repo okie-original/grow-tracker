@@ -923,6 +923,10 @@
         <select id="plantStrainSelect"></select>
       </div>
       <div class="field">
+        <label for="plantQty">How many are you adding?</label>
+        <input type="number" id="plantQty" min="1" value="1">
+      </div>
+      <div class="field">
         <label for="plantTentSelect">Tent</label>
         <select id="plantTentSelect"></select>
       </div>
@@ -1091,7 +1095,7 @@
 
     const { data: plants, error: plantError } = await sb
       .from('plants')
-      .select('id, stage, tent_id, planted_date, last_watered_at, strains(name)')
+      .select('id, stage, tent_id, planted_date, last_watered_at, created_at, strains(name)')
       .order('created_at', { ascending: false });
 
     if (plantError){
@@ -1234,6 +1238,26 @@
     return Math.max(0, Math.floor((now - then) / (1000 * 60 * 60 * 24)));
   }
 
+  // When several plants share a strain (e.g. a batch of 12 added together),
+  // label them "Strain #1", "Strain #2"... in the order they were added.
+  // A strain with only one plant just shows its plain name, no numbering.
+  function computePlantLabels(plants){
+    const byStrain = {};
+    plants.forEach(p => {
+      const key = p.strains ? p.strains.name : 'Unknown strain';
+      if (!byStrain[key]) byStrain[key] = [];
+      byStrain[key].push(p);
+    });
+    const labels = {};
+    Object.keys(byStrain).forEach(strainName => {
+      const group = byStrain[strainName].slice().sort((a, b) => new Date(a.created_at) - new Date(b.created_at));
+      group.forEach((p, idx) => {
+        labels[p.id] = group.length > 1 ? `${strainName} #${idx + 1}` : strainName;
+      });
+    });
+    return labels;
+  }
+
   function renderPlantList(){
     let filtered = cachedPlants;
     if (currentFilter === 'unassigned'){
@@ -1248,6 +1272,7 @@
     }
 
     const tentOptions = cachedTents.map(t => `<option value="${t.id}">${t.name}</option>`).join('');
+    const labels = computePlantLabels(cachedPlants);
 
     plantList.innerHTML = filtered.map(p => {
       const stage = p.stage || 'seedling';
@@ -1257,7 +1282,7 @@
         <div class="plant-card stage-${stage}">
           <div class="plant-card-top">
             <div>
-              <div class="plant-name">${p.strains ? p.strains.name : 'Unknown strain'}</div>
+              <div class="plant-name">${labels[p.id]}</div>
               <div class="plant-meta">${days !== null ? days + ' days in' : 'No planted date set'}${watered !== null ? ' · watered ' + watered + 'd ago' : ''}</div>
             </div>
             <div style="display:flex; align-items:center; gap:8px;">
@@ -1371,6 +1396,7 @@
     await populateStrainAndTentDropdowns();
     document.getElementById('plantStage').value = 'seedling';
     document.getElementById('plantedDate').value = new Date().toISOString().split('T')[0];
+    document.getElementById('plantQty').value = 1;
     addPlantModal.classList.add('open');
   });
 
@@ -1383,21 +1409,24 @@
     const tentId = document.getElementById('plantTentSelect').value;
     const stage = document.getElementById('plantStage').value;
     const plantedDate = document.getElementById('plantedDate').value;
+    const qty = Math.max(1, parseInt(document.getElementById('plantQty').value, 10) || 1);
 
     if (!strainId){
       alert('You need at least one strain set up first (add one in Seed Vault).');
       return;
     }
 
-    const { error } = await sb.from('plants').insert({
+    const rows = Array.from({ length: qty }, () => ({
       strain_id: strainId,
       tent_id: tentId || null,
       stage: stage,
       planted_date: plantedDate || null
-    });
+    }));
+
+    const { error } = await sb.from('plants').insert(rows);
 
     if (error){
-      alert('Error saving plant: ' + error.message);
+      alert('Error saving plant(s): ' + error.message);
       return;
     }
 
